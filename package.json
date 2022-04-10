@@ -14,7 +14,8 @@
     "lint:fix": "npm run lint -- --fix",
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
     "deploy:dev": "pm2 start ecosystem.config.js --only dev",
-    "heroku-postbuild": "npm install swc && npm install pm2"
+    "heroku-postbuild": "npm install swc",
+    "preinstall": "npm install pm2 -g"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
