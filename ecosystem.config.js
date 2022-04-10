@@ -21,7 +21,6 @@ module.exports = {
         NODE_ENV: 'development',
       },
       env_production: {
-        PORT: 3000,
         NODE_ENV: 'production',
         DB_HOST: 'hotel01.igpaf.mongodb.net',
         DB_PORT: '27017',
