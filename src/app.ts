@@ -48,8 +48,8 @@ class App {
     if (this.env !== 'production') {
       set('debug', true);
     }
-    logger.info(`Connecting to ${dbConnection.url}`);
     connect(dbConnection.url, dbConnection.options);
+    logger.info('Database Connected! 🎉');
   }
 
   private initializeMiddlewares() {
@@ -65,7 +65,7 @@ class App {
 
   private initializeRoutes(routes: Routes[]) {
     routes.forEach(route => {
-      this.app.use('/', route.router);
+      this.app.use('/api/v1', route.router);
     });
   }
 

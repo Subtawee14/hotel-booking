@@ -13,3 +13,11 @@ export class CreateUserDto {
   @IsString()
   public tel: string;
 }
+
+export class LoginDto {
+  @IsEmail()
+  public email: string;
+
+  @IsString()
+  public password: string;
+}
