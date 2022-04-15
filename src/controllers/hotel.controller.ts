@@ -16,6 +16,18 @@ class HotelController {
       next(error);
     }
   };
+
+  public getHotel = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const hotel: Hotel = await this.hotelService.getHotel(req.params.id);
+      res.send({
+        data: hotel,
+        message: 'success',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default HotelController;

@@ -14,6 +14,7 @@ class HotelRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, authMiddleware, this.hotelController.getHotels);
+    this.router.get(`${this.path}/:id`, authMiddleware, this.hotelController.getHotel);
   }
 }
 

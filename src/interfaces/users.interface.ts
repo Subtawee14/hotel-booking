@@ -7,4 +7,5 @@ export interface User {
   role: Role;
   tel: string;
   name: string;
+  bookings: string[];
 }

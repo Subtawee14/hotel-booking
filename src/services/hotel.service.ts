@@ -18,6 +18,32 @@ class HotelService {
     if (!hotel) throw new HttpException(409, "this hotel is doesn't exist");
     return hotel;
   }
+
+  public async addHotelBookings(hotelId: string, bookingId: string) {
+    if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
+
+    const findHotel = await this.hotels.findById(hotelId);
+    if (!findHotel) throw new HttpException(409, "this hotel is doesn't exist");
+
+    findHotel.bookings = [...findHotel.bookings, bookingId];
+    findHotel.save();
+
+    return findHotel;
+  }
+
+  public async removeHotelBookings(hotelId: string, bookingId: string) {
+    if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
+
+    const findHotel = await this.hotels.findById(hotelId);
+    if (!findHotel) throw new HttpException(409, "this hotel is doesn't exist");
+
+    findHotel.bookings = [...findHotel.bookings].filter(function (elem) {
+      return elem !== bookingId;
+    });
+    findHotel.save();
+
+    return findHotel;
+  }
 }
 
 export default HotelService;

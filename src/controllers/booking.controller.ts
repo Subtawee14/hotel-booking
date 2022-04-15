@@ -4,11 +4,13 @@ import { Booking } from '@/interfaces/bookings.interface';
 import { Role } from '@/models/contants/role.enum';
 import BookingService from '@/services/booking.service';
 import HotelService from '@/services/hotel.service';
+import UserService from '@/services/users.service';
 import { Request, Response, NextFunction } from 'express';
 
 class BookingController {
   public bookingService = new BookingService();
   public hotelService = new HotelService();
+  public userService = new UserService();
 
   public getBookings = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     let query;
@@ -42,7 +44,7 @@ class BookingController {
       if (!booking) {
         return res.status(404).json({
           success: false,
-          message: `No Boking with the id of ${req.params.id}`,
+          message: `No Booking with the id of ${req.params.id}`,
         });
       }
 
@@ -57,7 +59,18 @@ class BookingController {
 
   public createBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      const hotel = await this.hotelService.getHotel(req.body.hotelId);
+      if (!hotel) {
+        return res.status(400).json({
+          success: false,
+          message: `No hotel with the id of ${req.body.hotelId}`,
+        });
+      }
+
       const booking: Booking = await this.bookingService.createBooking({ user: req.user, ...req.body });
+      await this.userService.addUserBookings(req.user._id, booking._id);
+      await this.hotelService.addHotelBookings(req.body.hotelId, booking._id);
+
       res.send({
         data: booking,
         message: 'create booking success',
@@ -119,6 +132,8 @@ class BookingController {
       }
 
       const deletedBooking: Booking = await this.bookingService.deleteBooking(bookingId);
+      await this.userService.removeUserBookings(req.user._id, booking._id);
+      await this.hotelService.removeHotelBookings(booking.hotel._id, booking._id);
       res.send({
         data: deletedBooking,
         message: 'delete booking success',

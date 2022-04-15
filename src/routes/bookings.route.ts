@@ -15,6 +15,8 @@ class BookingRoute implements Routes {
     this.router.get(`${this.path}`, authMiddleware, this.bookingController.getBookings);
     this.router.get(`${this.path}/:id`, authMiddleware, this.bookingController.getBooking);
     this.router.post(`${this.path}`, authMiddleware, this.bookingController.createBooking);
+    this.router.put(`${this.path}/:id`, authMiddleware, this.bookingController.updateBooking);
+    this.router.delete(`${this.path}/:id`, authMiddleware, this.bookingController.deleteBooking);
   }
 }
 
