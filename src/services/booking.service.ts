@@ -15,18 +15,15 @@ class BookingService {
     });
   }
 
-  public getBookingsByUser(user: User) {
-    return this.bookings.find({ user: user }).populate({
+  public getBookingsWithQuery(queryStr: string) {
+    return this.bookings.find(JSON.parse(queryStr)).populate({
       path: 'hotel',
       select: 'name address tel',
     });
   }
 
-  public getBookingsByHotel(hotel: Hotel) {
-    return this.bookings.find({ hotel: hotel }).populate({
-      path: 'hotel',
-      select: 'name address tel',
-    });
+  public getNumberOfBookings(queryStr: string) {
+    return this.bookings.countDocuments(JSON.parse(queryStr));
   }
 
   public getBooking(id: string) {
@@ -46,20 +43,11 @@ class BookingService {
   public async updateBooking(bookingId: string, bookingData: CreateBookingDto) {
     this.validateBookingDate(bookingData.checkIn, bookingData.checkOut);
 
-    return this.bookings.findOneAndUpdate(
-      { _id: bookingId },
-      {
-        $set: {
-          checkIn: new Date(bookingData.checkIn),
-          checkOut: new Date(bookingData.checkOut),
-          hotel: Types.ObjectId(bookingData.hotelId),
-        },
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    const bookingDataStr = JSON.stringify(bookingData);
+    return this.bookings.findByIdAndUpdate(bookingId, JSON.parse(bookingDataStr), {
+      new: true,
+      runValidators: true,
+    });
   }
 
   public deleteBooking(bookingId: string) {

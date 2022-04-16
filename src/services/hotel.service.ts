@@ -19,6 +19,16 @@ class HotelService {
     return hotel;
   }
 
+  public getHotelsWithQuery(queryStr: string) {
+    if (isEmpty(queryStr)) throw new HttpException(400, 'Please add valid query string');
+    return this.hotels.find(JSON.parse(queryStr));
+  }
+
+  public async getNumberOfHotels(): Promise<number> {
+    const number = await this.hotels.countDocuments();
+    return number;
+  }
+
   public async addHotelBookings(hotelId: string, bookingId: string) {
     if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
 

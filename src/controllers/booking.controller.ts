@@ -6,6 +6,7 @@ import BookingService from '@/services/booking.service';
 import HotelService from '@/services/hotel.service';
 import UserService from '@/services/users.service';
 import { Request, Response, NextFunction } from 'express';
+import { Types } from 'mongoose';
 
 class BookingController {
   public bookingService = new BookingService();
@@ -14,22 +15,82 @@ class BookingController {
 
   public getBookings = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     let query;
+    let totalQuery;
+
+    const reqQuery = { ...req.query };
+
+    //Fields to exculde
+    const removeFields = ['select', 'sort', 'page', 'limit'];
+    removeFields.forEach(param => delete reqQuery[param]);
+
+    let queryStr = JSON.stringify(reqQuery);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+    query = this.bookingService.getBookingsWithQuery(queryStr);
+    totalQuery = this.bookingService.getNumberOfBookings(queryStr);
+
+    //Check Role
+    if (req.user.role !== Role.ADMIN) {
+      query = query.where('user').equals(Types.ObjectId(req.user._id));
+      totalQuery = totalQuery.where('user').equals(Types.ObjectId(req.user._id));
+    }
+
+    //Select field
+    if (req.query.select) {
+      const fieldsQuery = req.query.select as string;
+      const fields = fieldsQuery.split(',').join(' ');
+      query = query.select(fields);
+    }
+
+    //Sort
+    if (req.query.sort) {
+      const sortQuery = req.query.sort as string;
+      const sortBy = sortQuery.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    //Pagination
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 25;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
 
     try {
-      if (req.user.role !== Role.ADMIN) {
-        query = this.bookingService.getBookingsByUser(req.user);
-      } else {
-        if (req.params.hotelId) {
-          const hotel = await this.hotelService.getHotel(req.params.hotalId);
-          query = this.bookingService.getBookingsByHotel(hotel);
-        } else {
-          query = this.bookingService.getBookings();
-        }
+      const total = await totalQuery;
+
+      query = query.skip(startIndex).limit(limit);
+      const bookings: Booking[] = await query;
+
+      //Pagination result
+      type Page = { page: number; limit: number };
+      type Pagination = { next: Page; prev: Page; current: Page };
+      const pagination = {} as Pagination;
+
+      pagination.current = {
+        page: page,
+        limit,
+      };
+
+      if (endIndex < total) {
+        pagination.next = {
+          page: page + 1,
+          limit,
+        };
       }
 
-      const bookings: Booking[] = await query;
+      if (startIndex > 0) {
+        pagination.prev = {
+          page: page - 1,
+          limit,
+        };
+      }
+
       res.send({
         data: bookings,
+        count: bookings.length,
+        total,
+        pagination,
         message: 'get bookings success',
       });
     } catch (error) {
@@ -37,7 +98,7 @@ class BookingController {
     }
   };
 
-  public getBooking = async (req: Request, res: Response, next: NextFunction) => {
+  public getBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
       const booking: Booking = await this.bookingService.getBooking(req.params.id);
 
@@ -45,6 +106,13 @@ class BookingController {
         return res.status(404).json({
           success: false,
           message: `No Booking with the id of ${req.params.id}`,
+        });
+      }
+
+      if (booking.user._id.toString() !== req.user._id.toString() && req.user.role !== Role.ADMIN) {
+        return res.status(401).json({
+          data: {},
+          message: `User ${req.user._id} is not authorized to see this booking`,
         });
       }
 
@@ -94,10 +162,10 @@ class BookingController {
         });
       }
 
-      if (booking.user.toString() !== req.user._id && req.user.role !== Role.ADMIN) {
+      if (booking.user._id.toString() !== req.user._id.toString() && req.user.role !== Role.ADMIN) {
         return res.status(401).json({
           data: {},
-          message: `User ${req.user._id} is not authorized to delete this booking`,
+          message: `User ${req.user._id} is not authorized to update this booking`,
         });
       }
 
@@ -124,7 +192,7 @@ class BookingController {
         });
       }
 
-      if (booking.user._id.toString() !== req.user._id && req.user.role !== Role.ADMIN) {
+      if (booking.user._id.toString() !== req.user._id.toString() && req.user.role !== Role.ADMIN) {
         return res.status(401).json({
           data: {},
           message: `User ${req.user._id} is not authorized to delete this booking`,
