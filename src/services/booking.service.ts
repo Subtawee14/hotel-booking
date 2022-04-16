@@ -9,17 +9,29 @@ class BookingService {
   public bookings = bookingModel;
 
   public getBookings() {
-    return this.bookings.find().populate({
-      path: 'hotel',
-      select: 'name address tel',
-    });
+    return this.bookings
+      .find()
+      .populate({
+        path: 'hotel',
+        select: 'name address tel',
+      })
+      .populate({
+        path: 'user',
+        select: 'name role email tel',
+      });
   }
 
   public getBookingsWithQuery(queryStr: string) {
-    return this.bookings.find(JSON.parse(queryStr)).populate({
-      path: 'hotel',
-      select: 'name address tel',
-    });
+    return this.bookings
+      .find(JSON.parse(queryStr))
+      .populate({
+        path: 'hotel',
+        select: 'name address tel',
+      })
+      .populate({
+        path: 'user',
+        select: 'name role email tel',
+      });
   }
 
   public getNumberOfBookings(queryStr: string) {
@@ -27,10 +39,16 @@ class BookingService {
   }
 
   public getBooking(id: string) {
-    return this.bookings.findById(id).populate({
-      path: 'hotel',
-      select: 'name address tel',
-    });
+    return this.bookings
+      .findById(id)
+      .populate({
+        path: 'hotel',
+        select: 'name address tel',
+      })
+      .populate({
+        path: 'user',
+        select: 'name role email tel',
+      });
   }
 
   public createBooking(createBookingData: CreateBookingDto) {
@@ -51,10 +69,16 @@ class BookingService {
   }
 
   public deleteBooking(bookingId: string) {
-    return this.bookings.findByIdAndDelete(bookingId).populate({
-      path: 'hotel',
-      select: 'name address tel',
-    });
+    return this.bookings
+      .findByIdAndDelete(bookingId)
+      .populate({
+        path: 'hotel',
+        select: 'name address tel',
+      })
+      .populate({
+        path: 'user',
+        select: 'name role email tel',
+      });
   }
 
   private validateBookingDate(checkIn: string, checkOut: string) {

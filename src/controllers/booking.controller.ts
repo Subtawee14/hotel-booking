@@ -5,7 +5,7 @@ import { Role } from '@/models/contants/role.enum';
 import BookingService from '@/services/booking.service';
 import HotelService from '@/services/hotel.service';
 import UserService from '@/services/users.service';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
 class BookingController {
