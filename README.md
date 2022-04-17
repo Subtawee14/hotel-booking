@@ -1,4 +1,7 @@
-![TechHub](./src/public/image/TechHub_logo.png)
+<p align="center">
+  <img src="./src/public/image/TechHub_logo.png" alt="TechHub_logo" width="300">
+</p>
+
 # Members
 Subtawee Hanyut 6470188421
 
