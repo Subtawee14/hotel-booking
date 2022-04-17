@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./src/public/image/TechHub_logo.png" alt="TechHub_logo" width="500">
+  <img src="./src/public/image/TechHub_logo.webp" alt="TechHub_logo" width="500">
 </p>
 
 # Members
