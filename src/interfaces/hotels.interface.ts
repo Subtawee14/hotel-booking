@@ -3,4 +3,5 @@ export interface Hotel {
   name: string;
   address: string;
   tel: string;
+  bookings: string[];
 }

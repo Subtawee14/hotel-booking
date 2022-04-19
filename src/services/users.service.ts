@@ -59,6 +59,32 @@ class UserService {
 
     return deleteUserById;
   }
+
+  public async addUserBookings(userId: string, bookingId: string) {
+    if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
+
+    const findUser = await this.users.findById(userId);
+    if (!findUser) throw new HttpException(409, "You're not user");
+
+    findUser.bookings = [...findUser.bookings, bookingId];
+    findUser.save();
+
+    return findUser;
+  }
+
+  public async removeUserBookings(userId: string, bookingId: string) {
+    if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
+
+    const findUser = await this.users.findById(userId);
+    if (!findUser) throw new HttpException(409, "You're not user");
+
+    findUser.bookings = [...findUser.bookings].filter(function (elem) {
+      return elem !== bookingId;
+    });
+    findUser.save();
+
+    return findUser;
+  }
 }
 
 export default UserService;
