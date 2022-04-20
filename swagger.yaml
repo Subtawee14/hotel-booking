@@ -1,3 +1,15 @@
+openapi: 3.0.0
+info:
+  title: "Hotel Booking API"
+  version: "1.0.0"
+  description: "Hotel Booking API Documentation"
+# host: localhost:3000
+# basePath: /api/v1
+servers:
+  - url: /
+schemes:
+  # - https
+  - http
 tags:
 - name: users
   description: users API
@@ -242,7 +254,7 @@ definitions:
         description: booking Id
       hotel:
         type: string
-        description: hotel id 
+        description: hotel id
       user:
         type: string
         description: user id

@@ -13,6 +13,8 @@ import { dbConnection } from '@databases';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import YAML from 'yamljs';
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 class App {
   public app: express.Application;
@@ -70,19 +72,9 @@ class App {
   }
 
   private initializeSwagger() {
-    const options = {
-      swaggerDefinition: {
-        info: {
-          title: 'REST API',
-          version: '1.0.0',
-          description: 'Example docs',
-        },
-      },
-      apis: ['swagger.yaml'],
-    };
-
-    const specs = swaggerJSDoc(options);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    console.log('swaggerDocument', swaggerDocument);
+    swaggerDocument['servers'][0]['url'] = `http://localhost:${this.port}/api/v1`;
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   }
 
   private initializeErrorHandling() {
