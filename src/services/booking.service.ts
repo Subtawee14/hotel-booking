@@ -132,7 +132,7 @@ class BookingService {
     const hotel = await this.hotelService.getHotel(req.body.hotelId);
     if (!hotel) throw new HttpException(400, `No hotel with the id of ${req.body.hotelId}`);
 
-    const booking = await this.bookings.create({ ...req.body });
+    const booking = await this.bookings.create({ user: req.user._id, hotel: req.body.hotelId, ...req.body });
     await this.userService.addUserBookings(req.user._id, booking._id);
     await this.hotelService.addHotelBookings(req.body.hotelId, booking._id);
 
@@ -166,6 +166,8 @@ class BookingService {
       throw new HttpException(401, `User ${req.user._id} is not authorized to delete this booking`);
     }
 
+    await this.userService.removeUserBookings(req.user._id, booking._id);
+    await this.hotelService.removeHotelBookings(booking.hotel._id, booking._id);
     const deletedBooking = await this.bookings
       .findByIdAndDelete(req.params.id)
       .populate({
@@ -176,8 +178,6 @@ class BookingService {
         path: 'user',
         select: 'name role email tel',
       });
-    await this.userService.removeUserBookings(req.user._id, booking._id);
-    await this.hotelService.removeHotelBookings(booking.hotel._id, booking._id);
 
     return deletedBooking;
   }
