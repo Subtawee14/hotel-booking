@@ -16,7 +16,7 @@ class UsersController {
     }
   };
 
-  public getUserById = async (req: Request, res: Response, next: NextFunction) => {
+  public getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId: string = req.params.id;
       const findOneUserData: User = await this.userService.findUserById(userId);
