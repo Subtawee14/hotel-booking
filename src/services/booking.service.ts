@@ -6,6 +6,7 @@ import bookingModel from '@/models/bookings.model';
 import { Types } from 'mongoose';
 import HotelService from './hotel.service';
 import UserService from './users.service';
+import { Pagination } from '@/interfaces/pagination.interface';
 
 class BookingService {
   public bookings = bookingModel;
@@ -73,8 +74,6 @@ class BookingService {
     if (!bookings) throw new HttpException(400, 'Invalid Input! Please check your input data');
 
     //Pagination result
-    type Page = { page: number; limit: number };
-    type Pagination = { next: Page; prev: Page; current: Page };
     const pagination = {} as Pagination;
 
     pagination.current = {
@@ -191,7 +190,7 @@ class BookingService {
 
     if (checkInDate.getTime() < currentDate.getTime()) throw new HttpException(400, 'Check-in time must be equal or greater than current time');
     if (checkInDate.getTime() >= checkOutDate.getTime()) throw new HttpException(400, 'Check-out date must be grater than Check-in date');
-    if (numOfBookingDays >= 4) throw new HttpException(400, 'You cannot book more than 3 nights');
+    if (numOfBookingDays >= 3) throw new HttpException(400, 'You cannot book more than 3 nights');
   }
 }
 
