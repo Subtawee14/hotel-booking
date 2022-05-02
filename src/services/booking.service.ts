@@ -118,7 +118,7 @@ class BookingService {
         select: 'name role email tel',
       });
 
-    if (!booking) throw new HttpException(400, `No Booking with the id of ${bookingId}`);
+    if (!booking) throw new HttpException(404, `No Booking with the id of ${bookingId}`);
     if (booking.user._id.toString() !== user._id.toString() && user.role !== Role.ADMIN) {
       throw new HttpException(401, `User ${user._id} is not authorized to see this booking`);
     }
@@ -130,7 +130,7 @@ class BookingService {
     this.validateBookingDate(createBookingData.checkIn, createBookingData.checkOut);
 
     const hotel = await this.hotelService.getHotel(createBookingData.hotelId);
-    if (!hotel) throw new HttpException(400, `No hotel with the id of ${createBookingData.hotelId}`);
+    if (!hotel) throw new HttpException(404, `No hotel with the id of ${createBookingData.hotelId}`);
 
     const booking = await this.bookings.create({ user: user._id, hotel: createBookingData.hotelId, ...createBookingData });
     await this.userService.addUserBookings(user._id, booking._id);
@@ -143,7 +143,7 @@ class BookingService {
     this.validateBookingDate(updateBookingData.checkIn, updateBookingData.checkOut);
 
     const booking = await this.bookings.findById(bookingId);
-    if (!booking) throw new HttpException(400, `No Booking with the id of ${bookingId}`);
+    if (!booking) throw new HttpException(404, `No Booking with the id of ${bookingId}`);
 
     if (booking.user._id.toString() !== user._id.toString() && user.role !== Role.ADMIN) {
       throw new HttpException(401, `User ${user._id} is not authorized to update this booking`);
@@ -169,7 +169,7 @@ class BookingService {
 
   public async deleteBooking(bookingId: string, user: User) {
     const booking = await this.bookings.findById(bookingId);
-    if (!booking) throw new HttpException(400, `No Booking with the id of ${bookingId}`);
+    if (!booking) throw new HttpException(404, `No Booking with the id of ${bookingId}`);
 
     if (booking.user._id.toString() !== user._id.toString() && user.role !== Role.ADMIN) {
       throw new HttpException(401, `User ${user._id} is not authorized to delete this booking`);

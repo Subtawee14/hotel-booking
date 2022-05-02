@@ -83,7 +83,7 @@ class HotelService {
     if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
 
     const hotel: Hotel = await this.hotels.findById(hotelId);
-    if (!hotel) throw new HttpException(409, "this hotel is doesn't exist");
+    if (!hotel) throw new HttpException(404, "this hotel is doesn't exist");
     return hotel;
   }
 
@@ -91,7 +91,7 @@ class HotelService {
     if (isEmpty(hotelData)) throw new HttpException(400, 'Please add valid hotelData');
 
     const findHotel: Hotel = await this.hotels.findOne({ name: hotelData.name });
-    if (findHotel) throw new HttpException(409, 'This hotel name is already exist');
+    if (findHotel) throw new HttpException(400, 'This hotel name is already exist');
 
     const createdHotel: Hotel = await this.hotels.create({ ...hotelData, booking: [] });
 
@@ -109,7 +109,7 @@ class HotelService {
       new: true,
       runValidators: true,
     });
-    if (!updatedHotel) throw new HttpException(409, 'This Hotel is not exist');
+    if (!updatedHotel) throw new HttpException(404, 'This Hotel is not exist');
 
     return updatedHotel;
   }
@@ -118,7 +118,7 @@ class HotelService {
     if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
 
     const deletedHotel: Hotel = await this.hotels.findByIdAndDelete(hotelId);
-    if (!deletedHotel) throw new HttpException(409, "this hotel is doesn't exist");
+    if (!deletedHotel) throw new HttpException(404, "this hotel is doesn't exist");
     return deletedHotel;
   }
 
@@ -126,7 +126,7 @@ class HotelService {
     if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
 
     const findHotel = await this.hotels.findById(hotelId);
-    if (!findHotel) throw new HttpException(409, "this hotel is doesn't exist");
+    if (!findHotel) throw new HttpException(404, "this hotel is doesn't exist");
 
     findHotel.bookings = [...findHotel.bookings, bookingId];
     findHotel.save();
@@ -138,7 +138,7 @@ class HotelService {
     if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
 
     const findHotel = await this.hotels.findById(hotelId);
-    if (!findHotel) throw new HttpException(409, "this hotel is doesn't exist");
+    if (!findHotel) throw new HttpException(404, "this hotel is doesn't exist");
 
     findHotel.bookings = [...findHotel.bookings].filter(function (elem) {
       return elem !== bookingId;
