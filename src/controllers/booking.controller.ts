@@ -8,7 +8,7 @@ class BookingController {
 
   public getBookings = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const data = await this.bookingService.getBookings(req);
+      const data = await this.bookingService.getBookings(req.query, req.user);
 
       res.send({
         data: data,
@@ -21,7 +21,7 @@ class BookingController {
 
   public getBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const booking: Booking = await this.bookingService.getBooking(req);
+      const booking: Booking = await this.bookingService.getBooking(req.params.id, req.user);
 
       res.send({
         data: booking,
@@ -34,7 +34,7 @@ class BookingController {
 
   public createBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const booking: Booking = await this.bookingService.createBooking(req);
+      const booking: Booking = await this.bookingService.createBooking(req.body, req.user);
 
       res.send({
         data: booking,
@@ -47,7 +47,7 @@ class BookingController {
 
   public updateBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const updatedBooking: Booking = await this.bookingService.updateBooking(req);
+      const updatedBooking: Booking = await this.bookingService.updateBooking(req.params.id, req.body, req.user);
 
       res.send({
         data: updatedBooking,
@@ -60,7 +60,7 @@ class BookingController {
 
   public deleteBooking = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const deletedBooking: Booking = await this.bookingService.deleteBooking(req);
+      const deletedBooking: Booking = await this.bookingService.deleteBooking(req.params.id, req.user);
 
       res.send({
         data: deletedBooking,
