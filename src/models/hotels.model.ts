@@ -23,7 +23,8 @@ const hotelSchema: Schema = new Schema(
     ],
   },
   {
-    timestamps: true,
+    timestamps: false,
+    versionKey: false,
   },
 );
 

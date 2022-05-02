@@ -3,6 +3,8 @@ import { Request } from 'express';
 import { Hotel } from '@/interfaces/hotels.interface';
 import hotelModel from '@/models/hotels.model';
 import { isEmpty } from 'class-validator';
+import { Pagination } from '@/interfaces/pagination.interface';
+import { CreateHotelDto } from '@/dtos/hotel.dto';
 
 class HotelService {
   public hotels = hotelModel;
@@ -47,8 +49,6 @@ class HotelService {
     const hotels: Hotel[] = await query;
 
     //Pagination result
-    type Page = { page: number; limit: number };
-    type Pagination = { next: Page; prev: Page; current: Page };
     const pagination = {} as Pagination;
 
     pagination.current = {
@@ -85,6 +85,41 @@ class HotelService {
     const hotel: Hotel = await this.hotels.findById(hotelId);
     if (!hotel) throw new HttpException(409, "this hotel is doesn't exist");
     return hotel;
+  }
+
+  public async createHotel(hotelData: CreateHotelDto): Promise<Hotel> {
+    if (isEmpty(hotelData)) throw new HttpException(400, 'Please add valid hotelData');
+
+    const findHotel: Hotel = await this.hotels.findOne({ name: hotelData.name });
+    if (findHotel) throw new HttpException(409, 'This hotel name is already exist');
+
+    const createdHotel: Hotel = await this.hotels.create({ ...hotelData, booking: [] });
+
+    return createdHotel;
+  }
+
+  public async updateHotel(hotelId: string, updateHotelData: CreateHotelDto): Promise<Hotel> {
+    if (isEmpty(updateHotelData)) throw new HttpException(400, 'Please add hotel data');
+
+    const findHotel: Hotel = await this.hotels.findOne({ name: updateHotelData.name });
+    if (findHotel && findHotel._id != hotelId) throw new HttpException(409, 'This hotel name is already exist');
+
+    const updateHotelDataStr = JSON.stringify(updateHotelData);
+    const updatedHotel: Hotel = await this.hotels.findByIdAndUpdate(hotelId, JSON.parse(updateHotelDataStr), {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedHotel) throw new HttpException(409, 'This Hotel is not exist');
+
+    return updatedHotel;
+  }
+
+  public async deleteHotel(hotelId: string): Promise<Hotel> {
+    if (isEmpty(hotelId)) throw new HttpException(400, 'Please add valid hotel id');
+
+    const deletedHotel: Hotel = await this.hotels.findByIdAndDelete(hotelId);
+    if (!deletedHotel) throw new HttpException(409, "this hotel is doesn't exist");
+    return deletedHotel;
   }
 
   public async addHotelBookings(hotelId: string, bookingId: string) {
