@@ -1,5 +1,4 @@
 import { HttpException } from '@/exceptions/HttpException';
-import { RequestWithUser } from '@/interfaces/auth.interface';
 import { Role } from '@/models/contants/role.enum';
 import { Booking } from '@/interfaces/bookings.interface';
 import bookingModel from '@/models/bookings.model';
