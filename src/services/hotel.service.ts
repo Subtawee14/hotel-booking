@@ -102,7 +102,7 @@ class HotelService {
     if (isEmpty(updateHotelData)) throw new HttpException(400, 'Please add hotel data');
 
     const findHotel: Hotel = await this.hotels.findOne({ name: updateHotelData.name });
-    if (findHotel && findHotel._id != hotelId) throw new HttpException(409, 'This hotel name is already exist');
+    if (findHotel && findHotel._id != hotelId) throw new HttpException(401, 'This hotel name is already exist');
 
     const updateHotelDataStr = JSON.stringify(updateHotelData);
     const updatedHotel: Hotel = await this.hotels.findByIdAndUpdate(hotelId, JSON.parse(updateHotelDataStr), {
